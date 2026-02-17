@@ -7,7 +7,7 @@ export class IntValueObject extends ValueObject<number> {
   }
 
   private ensureValueIsInt(value: number): void {
-    if (!Number.isInteger(value)) {
+    if (value % 1 !== 0) {
       throw new Error('Value must be an integer');
     }
   }

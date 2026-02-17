@@ -1,6 +1,6 @@
-import { StringValueObject } from './string-value-object';
+import { ValueObject } from './Value-object';
 
-export class IdentifierValueObject extends StringValueObject {
+export class IdentifierValueObject extends ValueObject<string> {
   private static readonly UUID_V4_REGEX =
     /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
