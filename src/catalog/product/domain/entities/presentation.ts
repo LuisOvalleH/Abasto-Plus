@@ -48,4 +48,14 @@ export class Presentation {
       new PresentationUnitOfMeasure(unitOfMeasure)
     );
   }
+
+  public toPrimitives(): PresentationPrimitives {
+    return {
+      id: this.presentationId.toString(),
+      name: this.presentationName.toString(),
+      type: this.presentationType.toString(),
+      netQuantity: Number(this.presentationNetQuantity.toString()),
+      unitOfMeasure: this.presentationUnitOfMeasure.toString(),
+    };
+  }
 }

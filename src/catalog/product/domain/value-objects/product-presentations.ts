@@ -26,4 +26,8 @@ export class ProductPresentations extends ValueObject<Presentation[]> {
       throw new Error('Un producto no puede tener mas de 5 presentaciones');
     }
   }
+
+  public toPrimitives(): PresentationPrimitives[] {
+    return this.value.map((presentation) => presentation.toPrimitives());
+  }
 }

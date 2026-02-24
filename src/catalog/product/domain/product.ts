@@ -4,6 +4,13 @@ import { ProductName } from './value-objects/product-name';
 import { ProductPresentations } from './value-objects/product-presentations';
 import { PresentationPrimitives } from './entities/presentation';
 
+export type ProductPrimitives = {
+  id: string;
+  name: string;
+  baseUnit: string;
+  presentations: PresentationPrimitives[];
+};
+
 export class Product {
   private readonly productId: ProductId;
   private readonly productName: ProductName;
@@ -34,5 +41,14 @@ export class Product {
       new ProductBaseUnit(baseUnit),
       new ProductPresentations(presentations)
     );
+  }
+
+  public toPrimitives(): ProductPrimitives {
+    return {
+      id: this.productId.toString(),
+      name: this.productName.toString(),
+      baseUnit: this.productBaseUnit.toString(),
+      presentations: this.productPresentations.toPrimitives(),
+    };
   }
 }
