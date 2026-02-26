@@ -28,6 +28,6 @@ export class ProductPresentations extends ValueObject<Presentation[]> {
   }
 
   public toPrimitives(): PresentationPrimitives[] {
-    return this.value.map((presentation) => presentation.toPrimitives());
+    return this.getValue().map((presentation) => presentation.toPrimitives());
   }
 }
