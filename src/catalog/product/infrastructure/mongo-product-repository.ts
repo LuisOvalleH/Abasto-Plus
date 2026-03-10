@@ -1,6 +1,9 @@
 import { ProductRepository } from '../application/product-repository';
 import { Product } from '../domain/product';
-import { Collection, MongoClient } from 'mongodb';
+import { Collection } from 'mongodb';
+import { inject, injectable } from 'inversify';
+import { TYPES } from '../../../shared/infrastructure/di/types';
+import { MongoClientService } from '../../../shared/infrastructure/mongo/mongo-client.service';
 
 type ProductDocument = {
   _id: string;
@@ -17,26 +20,20 @@ type PresentationDocument = {
   unitOfMeasure: string;
 };
 
+@injectable()
 export class MongoProductRepository implements ProductRepository {
-  private readonly client: MongoClient;
   private productsCollection?: Collection<ProductDocument>;
   private presentationsCollection?: Collection<PresentationDocument>;
 
-  constructor(uri: string, dbName: string) {
-    this.client = new MongoClient(uri);
-    const db = this.client.db(dbName);
+  constructor(
+    @inject(TYPES.MongoClientService)
+    private readonly mongoClientService: MongoClientService
+  ) {
+    const db = this.mongoClientService.getDb();
     this.productsCollection = db.collection<ProductDocument>('products');
     this.presentationsCollection = db.collection<PresentationDocument>(
       'presentations'
     );
-  }
-
-  public async connect(): Promise<void> {
-    await this.client.connect();
-  }
-
-  public async disconnect(): Promise<void> {
-    await this.client.close();
   }
 
   public async save(data: Product): Promise<void> {

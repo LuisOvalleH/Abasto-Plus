@@ -1,18 +1,20 @@
-import { SaveProduct } from './catalog/product/application/use-cases/save-product';
-import { MongoProductRepository } from './catalog/product/infrastructure/mongo-product-repository';
+import 'reflect-metadata';
 import { randomUUID } from 'crypto';
+import { SaveProduct } from './catalog/product/application/use-cases/save-product';
+import { container } from './shared/infrastructure/dependency-container';
+import { TYPES } from './shared/infrastructure/di/types';
+import { MongoClientService } from './shared/infrastructure/mongo/mongo-client.service';
 
 async function bootstrap(): Promise<void> {
-  const mongoProductRepository = new MongoProductRepository(
-    'mongodb://localhost:27017',
-    'abasto_plus'
+  const saveProduct = container.get(SaveProduct);
+  const mongoClientService = container.get<MongoClientService>(
+    TYPES.MongoClientService
   );
-  const saveProduct = new SaveProduct(mongoProductRepository);
   const productId = randomUUID();
 
   const data = {
     id: productId,
-    name: 'Tortilla Integral 1kg',
+    name: 'Pan Integral 1kg',
     baseUnit: 'KILOGRAM',
     presentations: [
       {
@@ -25,12 +27,12 @@ async function bootstrap(): Promise<void> {
     ],
   };
 
-  await mongoProductRepository.connect();
+  await mongoClientService.connect();
   try {
     await saveProduct.execute(data);
     console.log('Guardado correcto en products y presentations. ProductId:', productId);
   } finally {
-    await mongoProductRepository.disconnect();
+    await mongoClientService.disconnect();
   }
 }
 

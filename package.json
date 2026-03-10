@@ -19,6 +19,8 @@
   },
   "homepage": "https://github.com/LuisOvalleH/Abasto-Plus#readme",
   "dependencies": {
+    "inversify": "^7.10.1",
+    "reflect-metadata": "^0.2.2",
     "mongodb": "^7.1.0"
   },
   "devDependencies": {
