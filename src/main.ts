@@ -1,11 +1,17 @@
 import 'reflect-metadata';
 import { randomUUID } from 'crypto';
 import { SaveProduct } from './catalog/product/application/use-cases/save-product';
+import { TranslateProductOnProductCreated } from './catalog/product/application/subscribers/translate-product-on-product-created';
 import { container } from './shared/infrastructure/dependency-container';
 import { TYPES } from './shared/infrastructure/di/types';
+import { InMemoryEventBus } from './shared/infrastructure/event-bus/in-memory-event-bus';
 import { MongoClientService } from './shared/infrastructure/mongo/mongo-client.service';
 
 async function bootstrap(): Promise<void> {
+  const eventBus = container.get(InMemoryEventBus);
+  const translateProductOnProductCreated = container.get(
+    TranslateProductOnProductCreated
+  );
   const saveProduct = container.get(SaveProduct);
   const mongoClientService = container.get<MongoClientService>(
     TYPES.MongoClientService
@@ -14,7 +20,7 @@ async function bootstrap(): Promise<void> {
 
   const data = {
     id: productId,
-    name: 'Pan Integral 1kg',
+    name: 'bread integral 1kg',
     baseUnit: 'KILOGRAM',
     presentations: [
       {
@@ -27,9 +33,12 @@ async function bootstrap(): Promise<void> {
     ],
   };
 
+  eventBus.addSubscribers([translateProductOnProductCreated]);
+
   await mongoClientService.connect();
   try {
     await saveProduct.execute(data);
+    await eventBus.dispatchConsumedEvents('catalog.', 10);
     console.log('Guardado correcto en products y presentations. ProductId:', productId);
   } finally {
     await mongoClientService.disconnect();

@@ -9,6 +9,7 @@ type ProductDocument = {
   _id: string;
   name: string;
   baseUnit: string;
+  translations?: Record<string, string>;
 };
 
 type PresentationDocument = {
@@ -63,5 +64,26 @@ export class MongoProductRepository implements ProductRepository {
         }))
       );
     }
+  }
+
+  public async saveTranslation(
+    productId: string,
+    language: string,
+    translatedName: string
+  ): Promise<void> {
+    const products = this.productsCollection;
+
+    if (!products) {
+      throw new Error('Repositorio no inicializado');
+    }
+
+    await products.updateOne(
+      { _id: productId },
+      {
+        $set: {
+          [`translations.${language}`]: translatedName,
+        },
+      }
+    );
   }
 }
